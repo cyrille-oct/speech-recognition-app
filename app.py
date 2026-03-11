@@ -7,6 +7,13 @@ APIS = {
     "2": "Sphinx"
 }
 
+LANGUAGES = {
+    "1": ("English", "en-US"),
+    "2": ("French", "fr-FR"),
+    "3": ("Spanish", "es-ES"),
+    "4": ("Arabic", "ar-SA")
+}
+
 def choose_api():
     print("\n=== Choose Speech Recognition API ===")
     for key, value in APIS.items():
@@ -17,13 +24,23 @@ def choose_api():
         return "1"
     return choice
 
+def choose_language():
+    print("\n=== Choose Language ===")
+    for key, (lang, code) in LANGUAGES.items():
+        print(f"{key} - {lang} ({code})")
+    choice = input("Enter language number: ")
+    if choice not in LANGUAGES:
+        print("⚠ Invalid choice. Using English by default.")
+        return "en-US"
+    return LANGUAGES[choice][1]
+
 def save_transcription(text):
     filename = input("Enter filename (without extension): ")
     with open(filename + ".txt", "a") as f:
         f.write(text + "\n")
     print(f"✅ Transcription saved to {filename}.txt")
 
-def transcribe_speech(api_choice):
+def transcribe_speech(api_choice, language):
     with sr.Microphone() as source:
         print("\n🎤 Speak now...")
         recognizer.adjust_for_ambient_noise(source)
@@ -31,13 +48,12 @@ def transcribe_speech(api_choice):
 
     try:
         if api_choice == "1":
-            text = recognizer.recognize_google(audio)
+            text = recognizer.recognize_google(audio, language=language)
         elif api_choice == "2":
             text = recognizer.recognize_sphinx(audio)
 
         print("📝 Transcription:", text)
 
-        # Ask user to save
         save_option = input("\nSave transcription to file? (y/n): ")
         if save_option.lower() == "y":
             save_transcription(text)
@@ -57,7 +73,9 @@ def main():
     print("=== Speech Recognition App ===")
     api_choice = choose_api()
     print(f"\n✅ Using: {APIS[api_choice]}")
-    transcribe_speech(api_choice)
+    language = choose_language()
+    print(f"🌍 Language set to: {language}")
+    transcribe_speech(api_choice, language)
 
 if __name__ == "__main__":
     main()
