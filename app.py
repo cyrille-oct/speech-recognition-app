@@ -17,6 +17,12 @@ def choose_api():
         return "1"
     return choice
 
+def save_transcription(text):
+    filename = input("Enter filename (without extension): ")
+    with open(filename + ".txt", "a") as f:
+        f.write(text + "\n")
+    print(f"✅ Transcription saved to {filename}.txt")
+
 def transcribe_speech(api_choice):
     with sr.Microphone() as source:
         print("\n🎤 Speak now...")
@@ -31,18 +37,19 @@ def transcribe_speech(api_choice):
 
         print("📝 Transcription:", text)
 
+        # Ask user to save
+        save_option = input("\nSave transcription to file? (y/n): ")
+        if save_option.lower() == "y":
+            save_transcription(text)
+
     except sr.UnknownValueError:
         print("❌ Speech not understood. Please speak clearly and try again.")
-
     except sr.RequestError as e:
         print(f"⚠ API connection failed. Check your internet connection.\nDetails: {e}")
-
     except sr.WaitTimeoutError:
         print("⏱ No speech detected. Please try again.")
-
     except OSError:
         print("🎙 Microphone not found. Please check your audio device.")
-
     except Exception as e:
         print(f"🔴 Unexpected error: {e}")
 
