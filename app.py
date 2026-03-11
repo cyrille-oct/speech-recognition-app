@@ -1,11 +1,7 @@
-# Question 1 — API Selection
-
 import speech_recognition as sr
 
-# Initialize recognizer
 recognizer = sr.Recognizer()
 
-# Available APIs
 APIS = {
     "1": "Google",
     "2": "Sphinx"
@@ -15,13 +11,10 @@ def choose_api():
     print("\n=== Choose Speech Recognition API ===")
     for key, value in APIS.items():
         print(f"{key} - {value}")
-    
     choice = input("Enter API number: ")
-    
     if choice not in APIS:
         print("⚠ Invalid choice. Using Google by default.")
         return "1"
-    
     return choice
 
 def transcribe_speech(api_choice):
@@ -39,10 +32,19 @@ def transcribe_speech(api_choice):
         print("📝 Transcription:", text)
 
     except sr.UnknownValueError:
-        print("❌ Could not understand the audio")
+        print("❌ Speech not understood. Please speak clearly and try again.")
 
     except sr.RequestError as e:
-        print(f"⚠ API request failed: {e}")
+        print(f"⚠ API connection failed. Check your internet connection.\nDetails: {e}")
+
+    except sr.WaitTimeoutError:
+        print("⏱ No speech detected. Please try again.")
+
+    except OSError:
+        print("🎙 Microphone not found. Please check your audio device.")
+
+    except Exception as e:
+        print(f"🔴 Unexpected error: {e}")
 
 def main():
     print("=== Speech Recognition App ===")
